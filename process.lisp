@@ -42,9 +42,9 @@
                       (user-homedir-pathname)))
             (,new (location ,(if n-p-p new-path '*cwd*)))
             (*cwd* ,new))
+       (check-location ,new)
        (unwind-protect
             (progn
-              (check-location ,new)
               (uiop:chdir ,new)
               ,@body)
          (uiop:chdir ,old)))))
