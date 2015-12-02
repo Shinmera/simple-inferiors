@@ -23,7 +23,7 @@
 
 (defgeneric valid-location-p (thing)
   (:method (thing)
-    (let ((location (ignore-errors thing)))
+    (let ((location (ignore-errors (location thing))))
       (and location (uiop:probe-file* location)))))
 
 (defun check-location (thing)
