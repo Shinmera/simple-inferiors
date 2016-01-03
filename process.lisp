@@ -157,7 +157,7 @@
     ((or integer keyword) (make-copier copier-ish))
     (symbol (fdefinition copier-ish))))
 
-#-sbcl (devar *process-start-lock* (bt:make-lock "Process starting lock"))
+#-sbcl (defvar *process-start-lock* (bt:make-lock "Process starting lock"))
 (defun %start-process (program args &rest kargs)
   #+sbcl (progn
            (check-location *cwd*)
