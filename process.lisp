@@ -113,17 +113,17 @@
         (finish-output output)))))
 
 (defun stop-process (process &key (attempts 10) (sleep 0.1))
-  (external-program:signal-process process :interrupt)
+  (uiop:terminate-process process)
   (loop repeat attempts
         do (sleep sleep)
-           (case (external-program:process-status process)
-             ((:stopped :exited) (return)))
-        finally (external-program:signal-process process :killed))
+           (unless (uiop:process-alive-p process)
+             (return))
+        finally (uiop:terminate-process process :urgent T))
   process)
 
 (defun ensure-process-stopped (process &rest args &key attempts sleep)
   (declare (ignore attempts sleep))
-  (when (eq (external-program:process-status process) :running)
+  (when (uiop:process-alive-p process)
     (apply #'stop-process process args))
   process)
 
@@ -132,7 +132,7 @@
        (loop do (funcall copier out-in out-out)
                 (funcall copier err-in err-out)
                 (sleep cooldown)
-             while (eq (external-program:process-status process) :running))
+             while (uiop:process-alive-p process))
     (ensure-process-stopped process :attempts stop-attempts :sleep stop-sleep)
     (funcall copier out-in out-out :consume-all T)
     (funcall copier err-in err-out :consume-all T)))
@@ -141,7 +141,7 @@
   (let ((err-thread (bt:make-thread (lambda () (funcall copier err-in err-out :consume-all T))))
         (out-thread (bt:make-thread (lambda () (funcall copier out-in out-out :consume-all T)))))
     (unwind-protect
-         (loop while (eq (external-program:process-status process) :running)
+         (loop while (uiop:process-alive-p process)
                do (sleep 0.1))
       (ensure-process-stopped process :attempts stop-attempts :sleep stop-sleep)
       (bt:join-thread err-thread)
@@ -159,12 +159,8 @@
 
 #-sbcl (defvar *process-start-lock* (bt:make-lock "Process starting lock"))
 (defun %start-process (program args &rest kargs)
-  #+sbcl (progn
-           (check-location *cwd*)
-           (apply #'external-program:start program args :directory *cwd* kargs))
-  #-sbcl (bt:with-lock-held (*process-start-lock*)
-           (with-exchdir ()
-             (apply #'external-program:start program args kargs))))
+  (#-sbcl bt:with-lock-held #-sbcl (*process-start-lock*) #+sbcl progn
+   (apply #'uiop:launch-program (list* program args) :directory *cwd* kargs)))
 
 (define-condition inferior-process-failed-condition ()
   ((program :initarg :program :accessor failed-program)
@@ -185,14 +181,15 @@
   (let ((copier (ensure-copier copier)))
     (with-resolved-stream (output)
       (with-resolved-stream (error)
-        (let* ((process (%start-process program args :output :stream :error :stream :input input))
-               (out-in (external-program:process-output-stream process))
-               (err-in (external-program:process-error-stream process)))
+        (let* ((process (%start-process program args :output :stream
+                                                     :error-output :stream
+                                                     :input input))
+               (out-in (uiop:process-info-output process))
+               (err-in (uiop:process-info-error-output process)))
           (unwind-protect
                (funcall handler copier process out-in output err-in error)
-            (close out-in)
-            (close err-in))
-          (let ((exit (nth-value 1 (external-program:process-status process))))
+            (uiop:close-streams process))
+          (let ((exit (uiop:wait-process process)))
             (if (= 0 exit)
                 exit
                 (case on-non-zero-exit

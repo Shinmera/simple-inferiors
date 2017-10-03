@@ -22,7 +22,7 @@ By default the streams will be copied character by character. This allows the mo
 
 The output actually doesn't change for this tiny test case, but the performance can be radically different for larger outputs. You may also pass a number to specify a custom buffer size, or a function to handle the stream copying yourself.
 
-When the stack is unwound, simple-inferiors tries to terminate the external process. By default it will send ten SIGINTs with 0.1 second delays and then a SIGKILL if it still hasn't terminated. In order to control this stopping, you must supply a different handler to `run`.
+When the stack is unwound, simple-inferiors tries to terminate the external process. By default it will try to ask the process to terminate with 0.1 second delays and then it will try to kill it if it still hasn't terminated. In order to control this stopping, you must supply a different handler to `run`.
 
     (simple-inferiors:run "bash" '("-c" "sleep 60") 
                           :handler (lambda (c p oi oo ei eo) 
