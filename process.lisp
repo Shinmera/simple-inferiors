@@ -183,7 +183,9 @@
       (with-resolved-stream (error)
         (let* ((process (%start-process program args :output :stream
                                                      :error-output :stream
-                                                     :input input))
+                                                     :input (case input
+                                                              ((T) *standard-input*)
+                                                              (T input))))
                (out-in (uiop:process-info-output process))
                (err-in (uiop:process-info-error-output process)))
           (unwind-protect
