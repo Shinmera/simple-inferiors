@@ -6,7 +6,7 @@
 
 (asdf:defsystem simple-inferiors
   :version "1.1.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A very simple library to use inferior processes."
