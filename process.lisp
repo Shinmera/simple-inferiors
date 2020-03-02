@@ -177,7 +177,6 @@
 
 (defun run (program args &key input output error (on-non-zero-exit :return) (handler #'handle-process-sequential) (copier :character))
   (ecase on-non-zero-exit ((NIL :return :error :warn)))
-  #+verbose (v:trace :legit "~a~{~^ ~a~}" program args)
   (let ((copier (ensure-copier copier)))
     (with-resolved-stream (output)
       (with-resolved-stream (error)
