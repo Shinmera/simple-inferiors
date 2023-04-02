@@ -19,7 +19,7 @@
   (:method ((pathname pathname))
     pathname)
   (:method ((string string))
-    (uiop:parse-native-namestring string)))
+    (uiop:parse-native-namestring string :ensure-directory T)))
 
 (defgeneric valid-location-p (thing)
   (:method (thing)
