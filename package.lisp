@@ -1,9 +1,3 @@
-#|
- This file is a part of simple-inferiors
- (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (in-package #:cl-user)
 (defpackage #:simple-inferiors
   (:nicknames #:org.shirakumo.simple-inferiors)

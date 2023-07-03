@@ -1,14 +1,8 @@
-#|
- This file is a part of simple-inferiors
- (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (asdf:defsystem simple-inferiors
   :version "1.1.0"
   :license "zlib"
-  :author "Nicolas Hafner <shinmera@tymoon.eu>"
-  :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
+  :author "Yukari Hafner <shinmera@tymoon.eu>"
+  :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "A very simple library to use inferior processes."
   :homepage "https://Shinmera.github.io/simple-inferiors/"
   :bug-tracker "https://github.com/Shinmera/simple-inferiors/issues"
